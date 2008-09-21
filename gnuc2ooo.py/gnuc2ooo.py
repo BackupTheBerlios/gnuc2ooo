@@ -42,6 +42,13 @@
 #   Knut Gerwens, 2008-09-16:
 #   Bugfix: locale.getlocale() -> locale.getdefaultlocale()
 #   Extension: field description in table TRN from 256 to 512 Bytes
+#
+#   Knut Gerwens, 2008-09-20:
+#   try/unconditional except for read input, so Windows XP-Users can use
+#   the program with unzipped GnuCashFiles (no valid gzip module).
+#   try/except for sort on hierarchy (accounttree), because python 2.3.4
+#   does not support keyword argument in sort.
+#   Infobox/Success-message at end of FillGnuCashDB
 
 import uno, unohelper
 import gzip
@@ -266,7 +273,11 @@ def accounttree():
         maxlvl = max(maxlvl, len(namelist))
         namelist.insert(0, acc)
         hierarchy.append(namelist)
-    hierarchy.sort(key=lambda l: l[1:])
+    try:
+        hierarchy.sort(key=lambda l: l[1:])
+    except:
+        pass
+
     filler = []
     create_accttree = create_accttree0
     insert_accttree = insert_accttree0
@@ -553,7 +564,7 @@ def fillGnuCashDB():
     try:
         f = gzip.open(gcfile)
         gcxml = f.read()
-    except IOError:
+    except:
         f = open(gcfile)
         gcxml = f.read()
 
@@ -574,5 +585,7 @@ def fillGnuCashDB():
     DB.DatabaseDocument.store()
     # close connection   
     Connection.close()
+    MessageBox('Database ' + dbname + ' has been successfully updated.',
+           MsgType="infobox")  
     
 g_exportedScripts = fillGnuCashDB, SetGnuCashFilePaths, 
