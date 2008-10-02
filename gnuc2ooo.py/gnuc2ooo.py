@@ -49,6 +49,14 @@
 #   try/except for sort on hierarchy (accounttree), because python 2.3.4
 #   does not support keyword argument in sort.
 #   Infobox/Success-message at end of FillGnuCashDB
+#
+#   Knut Gerwens, 2008-09-29:
+#   Improved Errorhandling. Errors are intercepted, Some Error and
+#   Trace-Information is written to logfile GnuCashFilePaths.txt
+#
+#   Knut Gerwens, 2008-10-02:
+#   Checkpoint-Statement at the end added, so tables are actually stored
+#   in database and not only as logfile
 
 import uno, unohelper
 import gzip
@@ -669,6 +677,9 @@ def exec_fillGnuCashDB():
     f.close()
     ct_lvl = accounttree()
     view_all_transactions(ct_lvl)
+    # write checkpoint so all tables are stored in database
+    # (and not only in logfile)
+    Stmt.execute("CHECKPOINT")
     DB.DatabaseDocument.store()
     # close connection   
     Connection.close()
