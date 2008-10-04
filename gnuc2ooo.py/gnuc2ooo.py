@@ -57,6 +57,10 @@
 #   Knut Gerwens, 2008-10-02:
 #   Checkpoint-Statement at the end added, so tables are actually stored
 #   in database and not only as logfile
+#
+#   Knut Gerwens, 2008-10-04:
+#   Improved memory-mangement. Writing to disc is enforced every 1000 rows
+#
 
 import uno, unohelper
 import gzip
@@ -99,6 +103,8 @@ last_input_endElement = 'not available'
 last_input_insert_statement = 'not available'
 last_input_characters = 'not available'
 last_input_MessageBox = 'not available'
+insert_ct = 0
+maxmemory = 1000
 
 def settings_filepath():
     userdir_url = PathSettings.UserConfig
@@ -450,10 +456,14 @@ class GCContent(sax.handler.ContentHandler):
 
         def insert_statement(kind, value_dict):
             global crout
-            crout = 'insert_statement'
             global last_input_insert_statement
+            crout = 'insert_statement'
             last_input_insert_statement = str(kind.encode(lcodec)) + ' ' + str(value_dict)
-
+            global insert_ct
+            insert_ct = insert_ct + 1
+            if insert_ct >= maxmemory:
+                Stmt.execute("CHECKPOINT")
+                insert_ct = insert_ct - maxmemory
             if kind == 'account': 
                 Stmt_ins_account.setString(1, value_dict['name'])
                 Stmt_ins_account.setString(2, value_dict['id'])
