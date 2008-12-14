@@ -3,8 +3,8 @@
  xmlns:dep="http://openoffice.org/extensions/description/2006"
  xmlns:xlink="http://www.w3.org/1999/xlink" >
    <identifier value="KGerwens.extensions.gnuc2ooo" />
-   <version value="1.6.0" />
+   <version value="2008.12.14" />
    <update-download>
-     <src xlink:href="http://www.alice-dsl.net/gnuc2ooo/gnuc2ooo.oxt" />
+     <src xlink:href="http://cvs.berlios.de/cgi-bin/viewcvs.cgi/gnuc2ooo/oxtfiles/gnuc2ooo.oxt?revision=HEAD" />
    </update-download>
 </description>
